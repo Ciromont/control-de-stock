@@ -17,12 +17,13 @@ public class ConnectionFactory {
 		pooledDataSource.setJdbcUrl("jdbc:mysql://localhost/control_de_stock?useTimeZone=true&serverTimeZone=UTC");
 		pooledDataSource.setUser("root");
 		pooledDataSource.setPassword("");
+		pooledDataSource.setMaxPoolSize(10);
 		
 		this.datasource = pooledDataSource;
 	}
 
 	public Connection recuperaConexion() throws SQLException {
-		// TODO Auto-generated method stub
+		
 		return this.datasource.getConnection();
 	
 
