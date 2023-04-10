@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alura.jdbc.factory.ConnectionFactory;
+import com.alura.jdbc.modelo.Producto;
 
 public class ProductoController {
 
@@ -87,58 +88,42 @@ public class ProductoController {
 	        }
         }
     }
-    public void guardar(Map<String, String> producto) throws SQLException {
-    	String nombre = producto.get("NOMBRE");
-    	String descripcion = producto.get("DESCRIPCION");
-    	Integer cantidad = Integer.valueOf(producto.get("CANTIDAD"));
-    	Integer maximoCantidad = 50;
+    
+    
+        
+    public void guardar(Producto producto) throws SQLException {
+    	ConnectionFactory factory = new ConnectionFactory();
     	
-        ConnectionFactory factory = new ConnectionFactory();
         final Connection con = factory.recuperaConexion();
         
         try(con){
-        //permite controlar manualmente las transacciones y hacer rollback o commit según sea necesario:
-        
+        //permite controlar manualmente las transacciones y hacer rollback o commit según sea necesario:        
 	        con.setAutoCommit(false);
 	
-	        final PreparedStatement statement = con.prepareStatement("INSERT INTO PRODUCTO "
+	        final PreparedStatement statement = con.prepareStatement(
+	        		"INSERT INTO PRODUCTO "
 	        		+ "(nombre, descripcion, cantidad)"
 			        + " VALUES (?, ?, ?) ",
 			        Statement.RETURN_GENERATED_KEYS); 
 	     
-	        try(statement) {
-		        
-			        do {
-			        	int cantidadParaGuardar = Math.min(cantidad, maximoCantidad);
-			        	
+	        try(statement) {		        
+			        ejecutaRegistro(producto, statement);	
 			        
-				        ejecutaRegistro(nombre, descripcion, cantidadParaGuardar, statement);
-				        
-				        cantidad -= maximoCantidad;
-				        
-				    }while (cantidad > 0);
-				        con.commit();
-				        System.out.println("COMMiT");
+					con.commit();
+	        }
+					        System.out.println("COMMiT");
 		        } catch(Exception e) {
 		        	con.rollback();
 		        	System.out.println("ROLLBACK");
 		        }
 	        }
-	        
-	   
-			        
-		}
-    
-
-	private void ejecutaRegistro(String nombre, String descripcion, Integer cantidad, PreparedStatement statement)
+	private void ejecutaRegistro(Producto producto, PreparedStatement statement)
 			throws SQLException {
-		if (cantidad < 50 ) {
-			throw new RuntimeException("Ocurrió un error");
-		}
 		
-		statement.setString(1, nombre); 
-        statement.setString(2, descripcion);   
-        statement.setInt(3, cantidad);   
+		statement.setString(1, producto.getNombre()); 
+        statement.setString(2, producto.getDescripcion());   
+        statement.setInt(3, producto.getCantidad());   
+        
 		statement.execute();        
         
 		final ResultSet resultSet = statement.getGeneratedKeys();
@@ -146,9 +131,9 @@ public class ProductoController {
 		try(resultSet) {
         
 	        while(resultSet.next()) {
+	        	producto.setId(resultSet.getInt(1));
 	            System.out.println(String.format(
-	                    "Fue insertado el producto de ID: %d",
-	                    resultSet.getInt(1)));
+	                    "Fue insertado el producto de %s", producto));
 	        }
 	}
 	}

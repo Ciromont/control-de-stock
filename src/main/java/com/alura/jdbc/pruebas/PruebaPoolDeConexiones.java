@@ -8,8 +8,7 @@ public class PruebaPoolDeConexiones {
 		 ConnectionFactory connectionFactory = new ConnectionFactory();
 		 
 		 for (int i = 0; i < 20; i++) {
-			 @SuppressWarnings("unused")
-			Connection conexion = connectionFactory.recuperaConexion();
+			 Connection conexion = connectionFactory.recuperaConexion();
 			 System.out.println("Abriendo la conexion de número " + (i + 1));
 		 }
 		

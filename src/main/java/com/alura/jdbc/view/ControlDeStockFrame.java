@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.alura.jdbc.controller.CategoriaController;
 import com.alura.jdbc.controller.ProductoController;
+import com.alura.jdbc.modelo.Producto;
 
 public class ControlDeStockFrame extends JFrame {
 
@@ -131,7 +131,8 @@ public class ControlDeStockFrame extends JFrame {
 
     private void configurarAccionesDelFormulario() {
         botonGuardar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 guardar();
                 limpiarTabla();
                 cargarTabla();
@@ -139,13 +140,15 @@ public class ControlDeStockFrame extends JFrame {
         });
 
         botonLimpiar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 limpiarFormulario();
             }
         });
 
         botonEliminar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 eliminar();
                 limpiarTabla();
                 cargarTabla();
@@ -153,7 +156,8 @@ public class ControlDeStockFrame extends JFrame {
         });
 
         botonModificar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 modificar();
                 limpiarTabla();
                 cargarTabla();
@@ -161,7 +165,8 @@ public class ControlDeStockFrame extends JFrame {
         });
 
         botonReporte.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 abrirReporte();
             }
         });
@@ -263,10 +268,9 @@ public class ControlDeStockFrame extends JFrame {
             return;
         }
 
-        var producto = new HashMap<String, String>();
-        producto.put("NOMBRE", textoNombre.getText());
-        producto.put("DESCRIPCION", textoDescripcion.getText());
-        producto.put("CANTIDAD", String.valueOf(cantidadInt));
+        var producto = new Producto(textoNombre.getText(),
+        		textoDescripcion.getText(),
+        		cantidadInt);      
         
         var categoria = comboCategoria.getSelectedItem();
 
