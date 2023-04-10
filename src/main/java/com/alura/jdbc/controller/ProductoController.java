@@ -87,26 +87,39 @@ public class ProductoController {
     	
         ConnectionFactory factory = new ConnectionFactory();
         Connection con = factory.recuperaConexion();
+        //permite controlar manualmente las transacciones y hacer rollback o commit según sea necesario:
+        con.setAutoCommit(false);
 
         PreparedStatement statement = con.prepareStatement("INSERT INTO PRODUCTO "
         		+ "(nombre, descripcion, cantidad)"
 		        + " VALUES (?, ?, ?) ",
 		        Statement.RETURN_GENERATED_KEYS); 
+        try {
         
-        do {
-        	int cantidadParaGuardar = Math.min(cantidad, maximoCantidad);
-        	
+	        do {
+	        	int cantidadParaGuardar = Math.min(cantidad, maximoCantidad);
+	        	
+	        
+		        ejecutaRegistro(nombre, descripcion, cantidadParaGuardar, statement);
+		        
+		        cantidad -= maximoCantidad;
+		        
+		    }while (cantidad > 0);
+		        con.commit();
+        } catch(Exception e) {
+        	con.rollback();
+        }
         
-        ejecutaRegistro(nombre, descripcion, cantidadParaGuardar, statement);
-        
-        cantidad -= maximoCantidad;
-        
-    }while (cantidad > 0);
-        con.close();
-}
+        statement.close();
+		        con.close();
+		}
 
 	private void ejecutaRegistro(String nombre, String descripcion, Integer cantidad, PreparedStatement statement)
 			throws SQLException {
+		if (cantidad < 50 ) {
+			throw new RuntimeException("Ocurrió un error");
+		}
+		
 		statement.setString(1, nombre); 
         statement.setString(2, descripcion);   
         statement.setInt(3, cantidad);   
